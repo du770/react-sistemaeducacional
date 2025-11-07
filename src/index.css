@@ -1,0 +1,263 @@
+/* ===========================
+   VARIÁVEIS DE TEMA
+   =========================== */
+
+:root {
+  --primary: #010203;
+  --primary-hover: #07121a;
+  --danger: #e63946;
+  --bg-light: #f9fafb;
+  --text-dark: #222;
+  --surface: #fff;
+  --radius: 6px;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Tema escuro */
+[data-theme='dark'] {
+  --primary: #0f1a25;
+  --primary-hover: #091724;
+  --danger: #f87171;
+  --bg-light: #1e1e1e;
+  --text-dark: #e5e5e5;
+  --surface: #2b2b2b;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* ===========================
+   REGRAS GLOBAIS
+   =========================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", Arial, sans-serif;
+}
+
+body {
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ===========================
+   CABEÇALHO / NAVBAR
+   =========================== */
+
+header {
+  background-color: var(--primary);
+  color: #fff;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow);
+}
+
+header h1 {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+header nav {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+header nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+header nav a:hover {
+  text-decoration: underline;
+}
+
+/* Botão do modo escuro */
+.theme-toggle {
+  background-color: #fff;
+  color: var(--primary);
+  border: none;
+  border-radius: var(--radius);
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+[data-theme='dark'] .theme-toggle {
+  background-color: #444;
+  color: #fff;
+}
+
+.theme-toggle:hover {
+  opacity: 0.9;
+}
+
+/* ===========================
+   CONTEÚDO
+   =========================== */
+
+main {
+  padding: 24px;
+  max-width: 900px;
+  margin: 24px auto;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: background 0.3s;
+}
+
+/* ===========================
+   FORMULÁRIOS
+   =========================== */
+
+input,
+select {
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  border: 1px solid #ccc;
+  background: var(--surface);
+  color: var(--text-dark);
+  margin-right: 8px;
+  transition: background 0.3s, color 0.3s;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+button {
+  background-color: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: var(--primary-hover);
+}
+
+button.danger {
+  background-color: var(--danger);
+}
+
+/* ===========================
+   TABELAS
+   =========================== */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+th,
+td {
+  padding: 10px;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: left;
+}
+
+[data-theme='dark'] th,
+[data-theme='dark'] td {
+  border-color: #444;
+}
+
+th {
+  background-color: var(--primary);
+  color: white;
+}
+
+tr:nth-child(even) {
+  background-color: #f5f5f5;
+}
+
+[data-theme='dark'] tr:nth-child(even) {
+  background-color: #333;
+}
+
+/* ===========================
+   RESPONSIVIDADE
+   =========================== */
+
+@media (max-width: 700px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  main {
+    width: 95%;
+    padding: 16px;
+  }
+
+  table,
+  th,
+  td {
+    font-size: 14px;
+  }
+}
+/* ===========================
+   LOADING SPINNER
+   =========================== */
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--primary);
+  font-weight: 500;
+  margin-top: 12px;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #ccc;
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===========================
+   MÉDIA DA TURMA
+   =========================== */
+.average-box {
+  margin-top: 16px;
+  background-color: #eaf4ff;
+  padding: 12px;
+  border-radius: var(--radius);
+  border: 1px solid #b8dcff;
+  display: inline-block;
+}
+button {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.85;
+}

@@ -8,7 +8,9 @@ import './styles/theme.css'
 import Courses from './pages/Courses'
 import Classes from './pages/Classes'
 import Students from './pages/Students'
+import Teachers from './pages/Teachers'
 import Grades from './pages/Grades'
+import Enrollments from './pages/Enrollments'
 
 const App: React.FC = () => {
   const [theme, setTheme] = useState(() => {
@@ -33,7 +35,9 @@ const App: React.FC = () => {
           <Link to="/">Cursos</Link>
           <Link to="/classes">Turmas</Link>
           <Link to="/students">Estudantes</Link>
+          <Link to="/teachers">Professores</Link>
           <Link to="/grades">Notas</Link>
+          <Link to="/enrollments">Matrículas</Link>
         </nav>
         <button onClick={toggleTheme} className="theme-toggle">
           {theme === 'light' ? '🌙' : '☀️'} {theme === 'light' ? 'Modo Escuro' : 'Modo Claro'}
@@ -45,7 +49,9 @@ const App: React.FC = () => {
           <Route path="/" element={<Courses />} />
           <Route path="/classes" element={<Classes />} />
           <Route path="/students" element={<Students />} />
+          <Route path="/teachers" element={<Teachers />} />
           <Route path="/grades" element={<Grades />} />
+          <Route path="/enrollments" element={<Enrollments />} />
         </Routes>
       </main>
 

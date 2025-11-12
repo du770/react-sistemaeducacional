@@ -1,73 +1,158 @@
 import React, { useEffect, useState } from 'react'
-import type { Student, ClassEntity } from '../api'
-import { getStudents, createStudent, updateStudent, deleteStudent, getClasses } from '../api'
+import { toast } from 'react-toastify'
+import type { Student } from '../api'
+import {
+  getStudents,
+  createStudent,
+  updateStudent,
+  deleteStudent,
+} from '../api'
 
 const Students: React.FC = () => {
   const [items, setItems] = useState<Student[]>([])
-  const [name, setName] = useState('')
-  const [classId, setClassId] = useState<number | undefined>(undefined)
+  const [loading, setLoading] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
-  const [classes, setClasses] = useState<ClassEntity[]>([])
+  const [formData, setFormData] = useState<Partial<Student>>({})
 
-  useEffect(() => { load(); loadClasses() }, [])
+  useEffect(() => {
+    load()
+  }, [])
 
   const load = async () => {
-    try { const s = await getStudents(); setItems(s || []) } catch (e) { console.error(e); alert('Erro ao carregar estudantes') }
+    setLoading(true)
+    try {
+      const data = await getStudents()
+      setItems(data || [])
+    } catch {
+      toast.error('Erro ao carregar estudantes')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const loadClasses = async () => {
-    try { const c = await getClasses(); setClasses(c || []) } catch (e) { console.error(e) }
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.currentTarget
+    setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleAdd = async () => {
-    if (!name.trim()) return
-    try { await createStudent({ name, classId }); setName(''); setClassId(undefined); load() } catch (e) { console.error(e); alert('Erro ao criar estudante') }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!formData.firstName?.trim() || !formData.lastName?.trim()) {
+      toast.warning('Nome e sobrenome do estudante são obrigatórios')
+      return
+    }
+
+    try {
+      if (editingId) {
+        await updateStudent(editingId, formData)
+        toast.success('Estudante atualizado com sucesso!')
+      } else {
+        await createStudent(formData as Student)
+        toast.success('Estudante adicionado com sucesso!')
+      }
+      resetForm()
+      load()
+    } catch {
+      toast.error(editingId ? 'Erro ao atualizar estudante' : 'Erro ao adicionar estudante')
+    }
   }
 
-  const startEdit = (s: Student) => { setEditingId(s.id ?? null); setName(s.name); setClassId(s.classId) }
-
-  const handleSave = async () => {
-    if (!editingId) return handleAdd()
-    try { await updateStudent(editingId, { name, classId }); setEditingId(null); setName(''); setClassId(undefined); load() } catch (e) { console.error(e); alert('Erro ao atualizar estudante') }
+  const startEdit = (s: Student) => {
+    setEditingId(s.id ?? null)
+    setFormData(s)
   }
 
   const handleDelete = async (id?: number) => {
     if (!id) return
-    if (!confirm('Confirmar exclusão do estudante?')) return
-    try { await deleteStudent(id); load() } catch (e) { console.error(e); alert('Erro ao excluir estudante') }
+    if (!window.confirm('Confirmar exclusão do estudante?')) return
+    try {
+      await deleteStudent(id)
+      toast.success('Estudante excluído com sucesso!')
+      load()
+    } catch {
+      toast.error('Erro ao excluir estudante')
+    }
+  }
+
+  const resetForm = () => {
+    setEditingId(null)
+    setFormData({})
   }
 
   return (
     <div>
       <h2>Estudantes</h2>
-      <div style={{ marginBottom: 12 }}>
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nome do estudante" />
-        <select value={classId ?? ''} onChange={(e) => setClassId(e.target.value ? Number(e.target.value) : undefined)} style={{ marginLeft: 8 }}>
-          <option value="">-- Selecionar turma --</option>
-          {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-        </select>
-        <button onClick={editingId ? handleSave : handleAdd} style={{ marginLeft: 8 }}>{editingId ? 'Salvar' : 'Adicionar'}</button>
-        {editingId && <button onClick={() => { setEditingId(null); setName(''); setClassId(undefined) }} style={{ marginLeft: 8 }}>Cancelar</button>}
-      </div>
 
-      <table style={{ width: '100%' }}>
-        <thead>
-          <tr><th>ID</th><th>Nome</th><th>Turma</th><th>Ações</th></tr>
-        </thead>
-        <tbody>
-          {items.map(s => (
-            <tr key={s.id}>
-              <td>{s.id}</td>
-              <td>{s.name}</td>
-              <td>{classes.find(c => c.id === s.classId)?.name ?? '-'}</td>
-              <td>
-                <button onClick={() => startEdit(s)}>Editar</button>
-                <button onClick={() => handleDelete(s.id)} style={{ marginLeft: 8 }}>Excluir</button>
-              </td>
+      <form onSubmit={handleSubmit} className="form">
+        <input
+          type="text"
+          name="firstName"
+          placeholder="Primeiro Nome"
+          value={formData.firstName || ''}
+          onChange={handleInputChange}
+          required
+        />
+        <input
+          type="text"
+          name="lastName"
+          placeholder="Sobrenome"
+          value={formData.lastName || ''}
+          onChange={handleInputChange}
+          required
+        />
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={formData.email || ''}
+          onChange={handleInputChange}
+        />
+        <button type="submit">
+          {editingId ? '✏️ Salvar' : '➕ Adicionar'}
+        </button>
+        {editingId && (
+          <button type="button" onClick={resetForm}>
+            ❌ Cancelar
+          </button>
+        )}
+      </form>
+
+      {loading && (
+        <div className="loading">
+          <div className="spinner" />
+          <p>Carregando...</p>
+        </div>
+      )}
+
+      {!loading && items.length === 0 ? (
+        <p>Nenhum estudante encontrado.</p>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Primeiro Nome</th>
+              <th>Sobrenome</th>
+              <th>Email</th>
+              <th>Ações</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {items.map(s => (
+              <tr key={s.id}>
+                <td>{s.id}</td>
+                <td>{s.firstName}</td>
+                <td>{s.lastName}</td>
+                <td>{s.email || '-'}</td>
+                <td>
+                  <button onClick={() => startEdit(s)}>✏️</button>
+                  <button onClick={() => handleDelete(s.id)}>🗑️</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   )
 }
